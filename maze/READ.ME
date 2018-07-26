@@ -1,0 +1,84 @@
+You are currently located at at (r1, c1) on a two-dimensional grid maze. Each cell of the grid is either empty or a wall. The empty cell is denoted by '.' and a wall is denoted by '#'.
+
+You are looking to move from (r1, c1) to (r2, c2) without making a move that would take you outside of the maze. There are 2 types of moves:
+
+Walk to any of the four adjacent cells (north, south, east, west direction) provided that the target cell is empty. This move takes C seconds.
+
+Jump into the nearest empty cell in any of four cardinal directions (north, south, east, west direction). Nearest empty cells in any of four cardinal directions can be adjacent cells. This move takes D seconds.
+
+If reaching the destination is impossible, return -1. Otherwise, return the smallest T such that it is possible to go from (r1, c1) to (r2, c2) in T seconds.
+
+The maze is represented by an array of string. The length of the array is the number rows, and the length of each string element of the array is the number of columns of the maze.
+
+ 
+
+Constraints:
+
+The length of the array is less than or equal to 100
+The length of each string is less than or equal to 100
+0 <= r1, c1, r2, c2 < 100
+0 <= C, D <= 10
+ 
+
+Input Format For Custom Testing:
+
+The first line contains an integer r1
+
+The second line contains an integer c1
+
+The third line contains an integer r2
+
+The fourth line contains an integer c2
+
+The fifth line contains an integer C
+
+The sixth line contains an integer D
+
+The seventh line contains a integer M as the number elements of the array.
+
+M following lines contain the strings of the array.
+
+ 
+
+Sample Input 0
+
+0
+0
+3
+3
+1
+2
+4
+.##.
+.###
+.###
+....
+ 
+
+Sample Output 0
+
+4
+Explanation:
+
+There are 2 ways to move from (0,0) to (3,3).
+
+We can keep walking south from (0,0) to (1,0), (2,0) (3,0) and then walking at east direction (3,1), (3,2), (3,3). This costs 6*1 = 6 times (1 second per walk)
+We can jump east from (0,0) to (0,3) which costs us 2 seconds per jump, then jump from (0,3) to (3,3) which costs us 2 seconds per jump. Totally it takes 4 seconds.
+ 
+
+Sample Input 1
+
+0
+1
+1
+0
+1
+2
+2
+#.
+.#
+ 
+
+Sample Output 2
+
+-1
