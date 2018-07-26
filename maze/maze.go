@@ -3,31 +3,58 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
-type cell struct {
+type cellType struct {
 	r       uint
 	c       uint
 	isEmpty bool
 }
 
-type params struct {
-	start    cell
-	end      cell
+type inputParams struct {
+	start    cellType
+	end      cellType
 	costWalk uint
 	costJump uint
 	size     uint
 }
 
 var (
+	debug  = true
 	buf    bytes.Buffer
 	logger = log.New(&buf, "logger: ", log.Lshortfile)
 )
 
-func parseInput(filename string) (params, error) {
-	var parameter params
+func parseInput(filename string) (inputParams, error) {
+	var parameter inputParams
+
+	content, err := ioutil.ReadFile(filename)
+
+	if err != nil {
+		return parameter, fmt.Errorf("unable to read file: %v", filename)
+	}
+
+	lines := strings.Split(string(content), "\n")
+
+	for num, line := range lines {
+		if num < 7 {
+			uintVal, err := strconv.ParseUint(line, 10, 32)
+			if err != nil {
+				return parameter, fmt.Errorf("unable to parse uint: %v", line)
+			}
+			switch num {
+			case 0:
+				parameter.start.r = uint(uintVal)
+			case 1:
+				parameter.start.c = uint(uintVal)
+			}
+		}
+	}
 
 	return parameter, nil
 }
@@ -37,20 +64,28 @@ func usage() {
 	os.Exit(1)
 }
 
+func resolver(filename string) int {
+	param, err := parseInput(filename)
+	if err != nil {
+		logger.Fatalf("parseInput failed: %v", err)
+	} else {
+		logger.Printf("input: %v", param)
+	}
+	return 4
+}
+
 func main() {
 	if len(os.Args) != 2 {
 		usage()
 	}
 
-	param, err := parseInput(os.Args[1])
-	if err != nil {
-		logger.Fatalf("parseInput failed: %v", err)
-	}
-
 	logger.Printf("working on maze ...")
-	logger.Printf("input: %v", param)
 
-	fmt.Print(&buf)
+	resolver(os.Args[1])
+
+	if debug {
+		fmt.Print(&buf)
+	}
 
 	os.Exit(0)
 }
