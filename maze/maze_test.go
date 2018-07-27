@@ -17,6 +17,14 @@ func Test(t *testing.T) {
 			"testfile2",
 			-1,
 		},
+		{
+			"testfile3",
+			6,
+		},
+		{
+			"testfile4",
+			7,
+		},
 	}
 
 	for _, test := range tests {
