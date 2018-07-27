@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bytes"
+	"flag"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -27,11 +26,9 @@ type inputParams struct {
 }
 
 var (
-	step   = 0
-	debug  = false
-	buf    bytes.Buffer
-	logger = log.New(&buf, "logger: ", log.Lshortfile)
-	maze   [][]cellType
+	step  = 0
+	debug = false
+	maze  [][]cellType
 )
 
 func parseInput(filename string) (inputParams, error) {
@@ -91,11 +88,6 @@ func parseInput(filename string) (inputParams, error) {
 		fmt.Printf("maze: %+v\n", maze)
 	}
 	return parameter, nil
-}
-
-func usage() {
-	fmt.Println("Usage:", os.Args[0], "inputfile")
-	os.Exit(1)
 }
 
 func popMinCostCell(q []*cellType) ([]*cellType, *cellType) {
@@ -194,7 +186,10 @@ func findNextCells(q *cellType, param inputParams) ([]*cellType, []uint) {
 }
 
 func findMinCost(q []*cellType, param inputParams) int {
-	fmt.Printf("step: %v\n", step)
+	if debug {
+		fmt.Printf("step: %v\n", step)
+	}
+
 	step = step + 1
 
 	nq, q1 := popMinCostCell(q)
@@ -234,39 +229,37 @@ func findMinCost(q []*cellType, param inputParams) int {
 func resolver(filename string) int {
 	param, err := parseInput(filename)
 	if err != nil {
-		logger.Fatalf("parseInput failed: %v", err)
-	} else {
-		logger.Printf("input: %v", param)
+		fmt.Printf("parseInput failed: %v", err)
+		os.Exit(1)
 	}
-
-	q := make([]*cellType, 1)
+	if debug {
+		fmt.Printf("input: %+v\n", param)
+	}
 
 	if !maze[param.start.r][param.start.c].isEmpty || !maze[param.end.r][param.end.c].isEmpty {
 		return -1
 	}
 
+	q := make([]*cellType, 1)
 	q[0] = &maze[param.start.r][param.start.c]
 
 	cost := findMinCost(q, param)
 
-	fmt.Println("minCost:", cost)
 	step = 0
 
 	return cost
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		usage()
-	}
+	debugPtr := flag.Bool("debug", false, "verbose output for debugging")
+	input := flag.String("input", "testfile1", "input test filename")
 
-	logger.Printf("working on maze ...")
+	flag.Parse()
 
-	resolver(os.Args[1])
+	debug = *debugPtr
 
-	if debug {
-		fmt.Print(&buf)
-	}
+	cost := resolver(*input)
+	fmt.Println("minCost:", cost)
 
 	os.Exit(0)
 }
